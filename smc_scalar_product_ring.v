@@ -277,7 +277,7 @@ Definition decimal_eq (acc: list ((B * B) * (B * B))) (i: 'I_n.+1) :=
   let ybs := unzip2 (unzip2 acc) in
   ((cas `_ 0 + cbs `_ 0)%R * 2 ^ i +
    \sum_(j < i)
-     (yas `_ j + ybs `_ j)%R * 2 ^ (i-j.+1) =
+     (yas `_ j.+1 + ybs `_ j.+1)%R * 2 ^ (i-j.+1) =
      \sum_(j < i) ((xas !_ (Wi j) : nat) + xbs !_ (Wi j)) * 2 ^ j)%nat.
 
 Definition acc_correct' (acc: list ((B * B) * (B * B))) (i: 'I_n.+1) :=
@@ -356,6 +356,7 @@ rewrite addnA.
 rewrite [RHS]addnAC.
 congr addn.
 case: acc Hsz {Hyas Hybs} ca0 cb0 => [|[[ca' cb'] [ya' yb']] acc] //= [Hsz].
+rewrite -mulnDl.
 (*
 rewrite !rev_cons !(take_nth 0).
 rewrite !zip_rcons;
