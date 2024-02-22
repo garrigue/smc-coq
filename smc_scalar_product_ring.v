@@ -328,30 +328,24 @@ Lemma foldl_ord_tuple (A: Type) (f: A -> 'I_n -> A) (P: A -> 'I_n.+1 -> Prop) (i
   P init ord0 -> P (foldl f init (ord_tuple n)) ord_max.
 Proof.
 move=>H.
+(* prepare for induction *)
 pose i:=n.
-have Hi:(i <= n)%N. done.
-have Hn:(n-i<n.+1)%N. rewrite subnn. done.
-have ->: ord0 = Ordinal Hn.
-apply /val_inj.
-by rewrite /= subnn.
-have ->: ord_tuple n = drop (n-i) (ord_tuple n) :> list _.
-by rewrite /= subnn drop0.
+have Hi:(i <= n)%N by [].
+have Hn:(n-i<n.+1)%N by rewrite subnn.
+have ->: ord0 = Ordinal Hn by apply /val_inj; rewrite /= subnn.
+have ->: ord_tuple n = drop (n-i) (ord_tuple n) :> list _
+  by rewrite /= subnn drop0.
 elim: i Hi Hn init => [|i IH] Hi Hn init Hinit.
-rewrite /=.
-rewrite subn0 drop_oversize //=.
-have ->//: ord_max = Ordinal Hn.
-apply /val_inj.
-by rewrite /= subn0.
-by rewrite size_enum_ord.
+  rewrite /= subn0 drop_oversize //=; last by rewrite size_enum_ord.
+  by have -> : ord_max = Ordinal Hn by apply /val_inj; rewrite /= subn0.
 have Hi': (n - i.+1 < n)%N by rewrite (_ : i = Ordinal Hi) // rev_ord_proof.
-move /(_ init (Ordinal Hi')) in H.
-rewrite (_:W (Ordinal Hi') = (Ordinal Hn)) in H;last by apply /val_inj.
+move: Hinit.
+have -> : Ordinal Hn = W (Ordinal Hi') by apply /val_inj.
+move/(H init (Ordinal Hi')).
 have Hn': (n - i < n.+1)%N by rewrite ltnS leq_subr.
-rewrite (_: S (Ordinal Hi') = Ordinal Hn') in H;last first.
-apply /val_inj.
-rewrite /= bump0.
-by rewrite subnS prednK // subn_gt0.
-move:(IH (ltnW Hi) _ _ (H Hinit)).
+have -> : S (Ordinal Hi') = Ordinal Hn'.
+  by apply /val_inj; rewrite /= bump0 subnS prednK // subn_gt0.
+move/(IH (ltnW Hi)).
 suff: drop (n - i.+1) (ord_tuple n) = Ordinal Hi' :: drop (n - i) (ord_tuple n).
   by move ->.
 rewrite -{1}(cat_take_drop (n-i.+1) (ord_tuple n)).
